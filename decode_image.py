@@ -36,7 +36,7 @@ def main():
     output_secret_name = model.signature_def[signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY].outputs['decoded'].name
     output_secret = tf.compat.v1.get_default_graph().get_tensor_by_name(output_secret_name)
 
-    bch = bchlib.BCH(BCH_POLYNOMIAL, BCH_BITS)
+    bch = bchlib.BCH(BCH_BITS, prim_poly=BCH_POLYNOMIAL)
 
     for filename in files_list:
         image = Image.open(filename).convert("RGB")
@@ -53,7 +53,7 @@ def main():
 
         data, ecc = packet[:-bch.ecc_bytes], packet[-bch.ecc_bytes:]
 
-        bitflips = bch.decode_inplace(data, ecc)
+        bitflips = bch.decode(data, ecc)
 
         if bitflips != -1:
             try:
